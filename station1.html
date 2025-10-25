@@ -103,6 +103,9 @@
       audio.play();
       playBtn.textContent = "🎧 Spielt...";
     });
+    audio.addEventListener('ended', () => {
+      playBtn.textContent = "🔊 Hinweis abspielen"
+    });
     const solution = "3712";
     document.getElementById('checkBtn').addEventListener('click', () => {
       const input = document.getElementById('code').value.trim().toUpperCase();
