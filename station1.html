@@ -85,8 +85,8 @@
 <body>
   <div class="runes" id="runes"></div>
   <h1>Rune der Schatten</h1>
-  <button id="playBtn">🔊 Hinweis abspielen</button>
-  <audio id="audio" src="audio/station1-pre.mp3"></audio>
+  <button id="playPre">🔊 Hinweis abspielen</button>
+  <audio id="audioPre" src="audio/station1-pre.mp3"></audio>
   <div>
     <p>Nur wer den Weg der Schatten zählt, kann den Schleier lüften...</p>
     <input id="code" type="text" placeholder="Rune eingeben..." />
@@ -95,20 +95,32 @@
   <div id="secret">
     <h2>✨ Der Schleier hebt sich...</h2>
     <p>Am Ende der alten Treppe wartet der erste Ruf der Finsternis. Suche dort, wo das Licht nie hinfällt...</p>
-    <button id="playBtn">🔊 Hinweis</button>
-    <audio id="audio" src="audio/station1-post.mp3"></audio>
+    <button id="playPost">🔊 Hinweis</button>
+    <audio id="audioPost" src="audio/station1-post.mp3"></audio>
     <p><strong>Geheimnis der Rune:</strong> [Hier kannst du Bild / Koordinaten / QR einfügen]</p>
   </div>
   <script>
-    const playBtn = document.getElementById('playBtn');
-    const audio = document.getElementById('audio');
-    playBtn.addEventListener('click', () => {
-      audio.play();
-      playBtn.textContent = "🎧 Spielt...";
+    const playPre = document.getElementById('playPre');
+    const audioPre = document.getElementById('audioPre');
+    const playPost = document.getElementById('playPost');
+    const audioPost = document.getElementById('audioPost');
+
+    playPre.addEventListener('click', () => {
+      audioPre.play();
+      playPre.textContent = "🎧 Spielt...";
     });
-    audio.addEventListener('ended', () => {
-      playBtn.textContent = "🔊 Hinweis abspielen"
+    audioPre.addEventListener('ended', () => {
+      playPre.textContent = "🔊 Hinweis abspielen";
     });
+
+    playPost.addEventListener('click', () => {
+      audioPost.play();
+      playPost.textContent = "🎧 Spielt...";
+    });
+    audioPost.addEventListener('ended', () => {
+      playPost.textContent = "🔊 Hinweis";
+    });
+
     const solution = "130";
     document.getElementById('checkBtn').addEventListener('click', () => {
       const input = document.getElementById('code').value.trim().toUpperCase();
