@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rune des Schattentors</title>
+  <title>Rune der Schatten</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=UnifrakturCook:wght@700&display=swap');
     body {
@@ -84,18 +84,20 @@
 </head>
 <body>
   <div class="runes" id="runes"></div>
-  <h1>Rune des Schattentors</h1>
+  <h1>Rune der Schatten</h1>
   <button id="playBtn">🔊 Hinweis abspielen</button>
   <audio id="audio" src="audio/station1-pre.mp3"></audio>
   <div>
-    <p>Nur wer den Pfad der Schatten kennt, darf den Schleier lüften...</p>
+    <p>Nur wer den Weg der Schatten zählt, kann den Schleier lüften...</p>
     <input id="code" type="text" placeholder="Rune eingeben..." />
     <button id="checkBtn">Entschlüsseln</button>
   </div>
   <div id="secret">
     <h2>✨ Der Schleier hebt sich...</h2>
-    <p>Unter der alten Treppe wartet der erste Ruf der Finsternis. Suche dort, wo das Licht nie hinfällt...</p>
-    <p><strong>Nächster Hinweis:</strong> [Hier kannst du Bild / Koordinaten / QR einfügen]</p>
+    <p>Am Ende der alten Treppe wartet der erste Ruf der Finsternis. Suche dort, wo das Licht nie hinfällt...</p>
+    <button id="playBtn">🔊 Hinweis</button>
+    <audio id="audio" src="audio/station1-post.mp3"></audio>
+    <p><strong>Geheimnis der Rune:</strong> [Hier kannst du Bild / Koordinaten / QR einfügen]</p>
   </div>
   <script>
     const playBtn = document.getElementById('playBtn');
@@ -107,7 +109,7 @@
     audio.addEventListener('ended', () => {
       playBtn.textContent = "🔊 Hinweis abspielen"
     });
-    const solution = "3712";
+    const solution = "130";
     document.getElementById('checkBtn').addEventListener('click', () => {
       const input = document.getElementById('code').value.trim().toUpperCase();
       if (input === solution) {
