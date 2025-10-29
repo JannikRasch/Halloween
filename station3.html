@@ -5,10 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rune des Lichts</title>
   <style>
+    :root{
+      --accent: #f0e68c;
+      --accent-glow: #f0e68c88;
+      --rune-color: #f0e68c33;
+      --bg-dark: #0a0a0a;
+      --text: #ddd;
+    }
+    /* wenn entschlüsselt: leuchtendes blau */
+    body.unlocked{
+      --accent: #00bfff;
+      --accent-glow: #00bfff88;
+      --rune-color: #00bfff44;
+    }
+
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=UnifrakturCook:wght@700&display=swap');
     body {
-      background: radial-gradient(circle at 20% 20%, #0a0a0a, #000);
-      color: #ddd;
+      background: radial-gradient(circle at 20% 20%, var(--bg-dark), #000);
+      color: var(--text);
       font-family: 'Cinzel Decorative', cursive;
       text-align: center;
       padding: 2em 1em;
@@ -19,16 +33,23 @@
       align-items: center;
       justify-content: flex-start;
     }
+    h0 {
+      font-family: 'UnifrakturCook', cursive;
+      font-size: 5em;
+      color: var(--accent-glow);
+      text-shadow: 0 0 15px var(--accent-glow);
+      margin-bottom: 10px;
+    }
     h1 {
       font-size: 2em;
       letter-spacing: 3px;
-      text-shadow: 0 0 10px #f0e68c88;
+      text-shadow: 0 0 10px var(--accent-glow);
       margin-bottom: 20px;
     }
     button {
       background: #111;
-      color: #f0e68c;
-      border: 2px solid #f0e68c88;
+      color: var(--accent);
+      border: 2px solid var(--accent-glow);
       padding: 10px 20px;
       border-radius: 8px;
       cursor: pointer;
@@ -36,12 +57,12 @@
       transition: all 0.3s;
     }
     button:hover {
-      background: #f0e68c22;
+      background: var(--accent-glow);
       transform: scale(1.05);
     }
     input {
       background: #222;
-      color: #f0e68c;
+      color: var(--accent);
       border: 1px solid #555;
       border-radius: 5px;
       padding: 8px;
@@ -63,13 +84,13 @@
     .runes {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      overflow: hidden;
+      overflow-y: auto;
       z-index: -1;
     }
     .rune {
       position: absolute;
       font-family: 'UnifrakturCook', cursive;
-      color: #f0e68c33;
+      color: var(--rune-color);
       font-size: 2rem;
       animation: floatRunes linear infinite;
       opacity: 0.6;
@@ -84,9 +105,10 @@
 </head>
 <body>
   <div class="runes" id="runes"></div>
-  <h1>Rune der Zeit</h1>
-  <button id="playBtn">🔊 Hinweis abspielen</button>
-  <audio id="audio" src="audio/station3.mp3"></audio>
+  <h0>ᛉ</h0>
+  <h1>Rune des Lichts</h1>
+  <button id="playPre">🔊 Hinweis abspielen</button>
+  <audio id="audioPre" src="audio/station3-pre.mp3"></audio>
   <div>
     <p>Wenn Licht auf Stein trifft, erwacht das Auge der Zeit.</p>
     <input id="code" type="text" placeholder="Schlüssel eingeben..." />
@@ -94,39 +116,73 @@
   </div>
   <div id="secret">
     <h2>✨ Der Schleier hebt sich...</h2>
-    <p>Die Glocke schweigt, doch das Opfer ist noch nicht verhindert. Geht zum Ort, wo Wasser das Echo trägt.</p>
-    <p><strong>Nächster Hinweis:</strong> [Hier kannst du Bild / Koordinaten / QR einfügen]</p>
+    <p>Die Glocke schweigt, doch das Opfer ist noch nicht verhindert. Geht zum Ort, wo Wasser das Echo trägt...</p>
+    <button id="playPost">🔊 Hinweis</button>
+    <audio id="audioPost" src="audio/station3-post.mp3"></audio>
+    <button id="secretBtn">Geheimnis der Rune</button>
   </div>
   <script>
-    const playBtn = document.getElementById('playBtn');
-    const audio = document.getElementById('audio');
-    playBtn.addEventListener('click', () => {
-      audio.play();
-      playBtn.textContent = "🎧 Spielt...";
+    const playPre = document.getElementById('playPre');
+    const audioPre = document.getElementById('audioPre');
+    const playPost = document.getElementById('playPost');
+    const audioPost = document.getElementById('audioPost');
+
+    playPre.addEventListener('click', () => {
+      audioPre.play();
+      playPre.textContent = "🎧 Spielt...";
     });
-    audio.addEventListener('ended', () => {
-      playBtn.textContent = "🔊 Hinweis abspielen"
+    audioPre.addEventListener('ended', () => {
+      playPre.textContent = "🔊 Hinweis abspielen";
     });
-    const solution = "TURM";
+
+    playPost.addEventListener('click', () => {
+      audioPost.play();
+      playPost.textContent = "🎧 Spielt...";
+    });
+    audioPost.addEventListener('ended', () => {
+      playPost.textContent = "🔊 Hinweis";
+    });
+
+    const solution = "130";
     document.getElementById('checkBtn').addEventListener('click', () => {
       const input = document.getElementById('code').value.trim().toUpperCase();
       if (input === solution) {
         document.getElementById('secret').style.display = "block";
+
+        // aktiviere "unlocked"-Design (leuchtendes blau)
+        document.body.classList.add('unlocked');
+
+        // zusätzliche Runen erzeugen (z.B. +60)
+        createRunes(60);
       } else {
         alert("Die Rune bleibt verschlossen...");
       }
     });
+
+     document.getElementById('secretBtn').addEventListener('click', () => {
+      window.location.href = 'station1-secret.html';
+    });
+
     const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚺ','ᚾ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
     const runesContainer = document.getElementById('runes');
-    for(let i=0; i<40; i++){
-      const el = document.createElement('div');
-      el.classList.add('rune');
-      el.textContent = runes[Math.floor(Math.random()*runes.length)];
-      el.style.left = Math.random()*100 + 'vw';
-      el.style.animationDuration = (8 + Math.random()*10) + 's';
-      el.style.animationDelay = Math.random()*5 + 's';
-      runesContainer.appendChild(el);
+
+    // Funktion zum Erzeugen von Runen
+    function createRunes(count){
+      for(let i=0; i<count; i++){
+        const el = document.createElement('div');
+        el.classList.add('rune');
+        el.textContent = runes[Math.floor(Math.random()*runes.length)];
+        el.style.left = (Math.random()*100) + 'vw';
+        el.style.top = (Math.random()*100) + 'vh';
+        el.style.animationDuration = (8 + Math.random()*10) + 's';
+        el.style.animationDelay = Math.random()*5 + 's';
+        el.style.fontSize = (1.2 + Math.random()*2.5) + 'rem';
+        runesContainer.appendChild(el);
+      }
     }
+
+    // initiale Anzahl Runen
+    createRunes(40);
   </script>
 </body>
 </html>
