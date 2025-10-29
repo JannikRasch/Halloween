@@ -97,7 +97,7 @@
     <p>Am Ende der alten Treppe wartet der erste Ruf der Finsternis. Suche dort, wo das Licht nie hinfällt...</p>
     <button id="playPost">🔊 Hinweis</button>
     <audio id="audioPost" src="audio/station1-post.mp3"></audio>
-    <p><strong>Geheimnis der Rune:</strong> [Hier kannst du Bild / Koordinaten / QR einfügen]</p>
+    <button id="secretBtn">Geheimnis der Rune</button>
   </div>
   <script>
     const playPre = document.getElementById('playPre');
@@ -130,6 +130,11 @@
         alert("Die Rune bleibt verschlossen...");
       }
     });
+
+     document.getElementById('secretBtn').addEventListener('click', () => {
+      window.location.href = 'station1/secret/index.html';
+    });
+
     const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚺ','ᚾ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
     const runesContainer = document.getElementById('runes');
     for(let i=0; i<40; i++){
