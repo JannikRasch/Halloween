@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Die Stimmen des Rituals</title>
+<title>Der Kreis der Erlösung</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap');
 body{
@@ -57,11 +57,11 @@ p.lead{opacity:0.9;margin-top:0}
 
 <div class="container">
   <div class="card">
-    <h1>Die Stimmen des Rituals</h1>
+    <h1>Der Kreis der Erlösung</h1>
     <p class="lead small">Hinweis (Audio) — untenstehender Button spielt die Sprecheraufnahme ab. Der Text ist zusätzlich weiter unten zur Vorbereitung des TTS sichtbar.</p>
     <button class="playbtn" id="playBtn">🔊 Hinweis abspielen</button>
-    <audio id="audio" src="audio/raetsel1.mp3"></audio>
-    <div class="hintbox"><p>Ordnet die vier Zeilen so, wie die Runen im Spiel erschienen. Tragt die vier Schlüsselwörter <strong>(Schatten, Zeichen, Licht, Opfer)</strong> durch Kommas getrennt ein (z. B. <em>Schatten,Zeichen,Licht,Opfer</em>).<br><span class='small'>Hinweis: Groß-/Kleinschreibung wird ignoriert.</span></p></div>
+    <audio id="audio" src="audio/finale.mp3"></audio>
+    <div class="hintbox"><p>Im Finale prüft das Siegel eure Antworten. Wenn alles stimmt, werdet ihr den Gegenzauber sprechen können.</p></div>
 
     <div id="interaction" style="margin-top:12px;">
     </div>
@@ -71,15 +71,9 @@ p.lead{opacity:0.9;margin-top:0}
     <div class="footer-small">
       <strong>Sprechertext (für TTS):</strong>
       <pre style="white-space:pre-wrap;margin-top:8px;background:rgba(0,0,0,0.25);padding:10px;border-radius:8px">
-(Anfang: dumpfer Klang, Flüstern)
-Ihr steht vor dem Altar. Vier Stimmen sprechen, doch die Reihenfolge wurde vertauscht.
-Sprecherlinien:
-"Ich bin das Opfer, geboren aus Asche."
-"Ich bin der Schatten, entstanden durch das Feuer."
-"Ich bin das Licht, strahlend durch die Dunkelheit."
-"Ich bin das Zeichen, gemalt mit Blut."
-Ordnet die Zeilen in der Reihenfolge, wie ihr die Runen während eurer Suche gefunden habt.
-(tonal: geheimnisvoll, mit Pause nach jeder Zeile)
+(Dramatischer Chor, Herzschlag, steigende Spannung)
+"Nun sei das Siegel gebrochen, wenn die Reihenfolge stimmt und die Gaben korrekt dargebracht."
+Sprecheranweisung: eindringlich, triumphal am Ende.
 </pre>
     </div>
   </div>
@@ -87,21 +81,27 @@ Ordnet die Zeilen in der Reihenfolge, wie ihr die Runen während eurer Suche gef
 
 <script>
 
-// runes audio play
-document.getElementById('playBtn').addEventListener('click', ()=>{ const a=document.getElementById('audio'); a.play(); });
-// interaction UI
+document.getElementById('playBtn').addEventListener('click', function(){ document.getElementById('audio').play(); });
 document.getElementById('interaction').innerHTML = `
-  <label class="small">Reihenfolge eingeben:</label>
-  <input id="r1input" class="input" placeholder="Schatten,Zeichen,Licht,Opfer">
-  <button class="button" id="r1save">Antwort speichern (wird später im Finale geprüft)</button>
-  <div class="small" style="margin-top:8px">Hinweis: Die Seite sagt nicht, ob die Antwort korrekt ist. Die Auswertung geschieht im Finale.</div>
+  <p class="small">Drückt auf 'Prüfe das Siegel' um zu sehen, ob eure gespeicherten Antworten korrekt sind. Nur wenn alle vier Rätsel korrekt gelöst wurden, kann der Gegenzauber gesprochen werden.</p>
+  <button class="button" id="checkAll">Prüfe das Siegel</button>
+  <div id="results" style="margin-top:12px"></div>
 `;
-document.getElementById('r1save').addEventListener('click', ()=>{
-  const v = document.getElementById('r1input').value.trim();
-  if(!v){ alert('Bitte etwas eingeben.'); return; }
-  localStorage.setItem('r1_answer', v);
-  document.getElementById('feedback').style.display='block';
-  document.getElementById('feedback').innerHTML = '<div class="small">Antwort gespeichert. Kehrt zum Finale zurück, um die Ergebnisse zu prüfen.</div>';
+document.getElementById('checkAll').addEventListener('click', function(){
+  var correct = {"r1": "Schatten,Zeichen,Licht,Opfer", "r2": "69723", "r3": "kerze,blut,asche,salz,wasser", "r4": "FIC"};
+  var r1 = (localStorage.getItem('r1_answer')||'').trim();
+  var r2 = (localStorage.getItem('r2_answer')||'').trim();
+  var r3 = (localStorage.getItem('r3_answer')||'').trim();
+  var r4 = (localStorage.getItem('r4_answer')||'').trim().toUpperCase();
+  function show(msg){ var el = document.getElementById('results'); el.innerHTML += msg + '<br/>'; }
+  var all = true;
+  var norm = function(s){ return s.toString().split(',').map(function(x){return x.trim().toLowerCase();}).join(','); };
+  if(r1 && norm(r1)===norm(correct.r1)){ show('<div class="success">Rätsel 1: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 1: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r2 && r2===correct.r2){ show('<div class="success">Rätsel 2: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 2: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r3 && r3===correct.r3){ show('<div class="success">Rätsel 3: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 3: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r4 && r4===correct.r4){ show('<div class="success">Rätsel 4: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 4: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(all){ document.getElementById('results').innerHTML += '<div style="margin-top:12px" class="success"><strong>Alle Rätsel korrekt! Der Gegenzauber wird gesprochen...</strong></div>'; new Audio('audio/finale.mp3').play(); setTimeout(function(){ alert('Gegenzauber aktiviert — Ritual gebrochen!'); },1200); }
+  else{ document.getElementById('results').innerHTML += '<div style="margin-top:12px" class="fail"><strong>Nicht alle Antworten stimmen. Überprüft eure Notizen und kehrt zu den Stationen zurück.</strong></div>'; }
 });
 
 </script>
