@@ -1,91 +1,109 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Der Kreis der Erlösung</title>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Der Kreis der Erlösung</title>
 <style>
-
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap');
-body{margin:0;padding:1.2rem;background:radial-gradient(circle at 20% 20%, #050507, #000);color:#e6e2d3;font-family:'Cinzel Decorative',serif;min-height:100vh;overflow-y:auto;}
-.container{max-width:920px;margin:0 auto;}
-.card{background:rgba(10,10,12,0.6);padding:18px;border-radius:12px;}
-.playbtn{background:#0b1220;color:#9fd8ff;border-radius:8px;padding:10px 14px;border:none;cursor:pointer}
-.input{display:block;width:100%;padding:10px;margin-top:12px;border-radius:8px;border:1px solid #333;background:#0c0c0e;color:#efe7c6}
-
-body{background:radial-gradient(circle at 30% 20%, #001021, #000018); color:#dfefff}
-.card{background:rgba(5,10,20,0.75);border:1px solid rgba(80,160,255,0.06)}
-.runecanvas{width:100%;height:360px;display:block;margin:16px 0}
-.playbtn{background:#062033;color:#bfe9ff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
-.final-button{background:#08314a;color:#cfeeff;padding:10px 14px;border-radius:10px;border:1px solid rgba(150,220,255,0.06)}
-.success-box{background:rgba(10,30,50,0.6);border:1px solid rgba(120,200,255,0.08);padding:12px;border-radius:8px;margin-top:12px}
-</style>
-</head><body>
-<div class="container"><div class="card">
-<h1>Der Kreis der Erlösung</h1>
-<button class="playbtn" id="playBtn">🔊 Hinweis abspielen</button>
-<audio id="audio" src="audio/finale.mp3"></audio>
-<div class="hintbox"><p>Im Finale prüft das Siegel eure Antworten. Wenn alles stimmt, werdet ihr den Gegenzauber sprechen können.</p></div>
-<canvas id="runecast" class="runecanvas"></canvas>
-<div id="interaction" style="margin-top:12px">
-  <p class="small">Drückt auf 'Prüfe das Siegel' um zu sehen, ob eure gespeicherten Antworten korrekt sind.</p>
-  <button id="checkAll" class="final-button">Prüfe das Siegel</button>
-  <div id="results" style="margin-top:12px"></div>
-</div>
-<hr>
-<strong>Sprechertext (für TTS):</strong>
-<pre style="white-space:pre-wrap;background:rgba(0,0,0,0.25);padding:8px;border-radius:6px">(Dramatischer Chor, Herzschlag, steigende Spannung)
-Ton: eindringlich, triumphal am Ende. Zuerst leise, dann zunehmend kraftvoll.
-
-"Nun sei das Siegel gebrochen, wenn die Reihenfolge stimmt und die Gaben korrekt dargebracht."
-Sprecheranweisung: Sprich die Zeilen langsam, mit Nachdruck; lasse nach der letzten Zeile ein kurzes Schweigen, dann ein heller Chime.
-
-(Ende: Nachhall, sanftes Ausklingen)
-</pre></div></div>
-<script>
-document.getElementById('playBtn').addEventListener('click', function(){ document.getElementById('audio').play(); });
-
-const canvas = document.getElementById('runecast');
-const ctx = canvas.getContext('2d');
-function resize(){ canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
-window.addEventListener('resize', resize); resize();
-const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚺ','ᚾ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
-let angle=0; let glow=0; let success=false;
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const cx = canvas.width/2, cy = canvas.height/2, R = Math.min(canvas.width,canvas.height)/3;
-  const g = ctx.createRadialGradient(cx,cy,10,cx,cy,R*1.4);
-  g.addColorStop(0,'rgba(40,80,120,0.12)'); g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height);
-  for(let i=0;i<16;i++){
-    const a = angle + i*(Math.PI*2/16);
-    const x = cx + Math.cos(a)*R, y = cy + Math.sin(a)*R;
-    ctx.font = Math.floor(R/5)+'px serif';
-    ctx.fillStyle = success ? 'rgba(180,240,255,'+(0.5+0.4*Math.sin(angle*3))+')' : 'rgba(140,190,220,0.26)';
-    ctx.save(); ctx.translate(x,y); ctx.rotate(a+Math.PI/2); ctx.fillText(runes[(i*3)%runes.length], -12, 6); ctx.restore();
-  }
-  ctx.beginPath();
-  ctx.arc(cx,cy, R*0.45, 0, Math.PI*2);
-  ctx.strokeStyle = success ? 'rgba(160,220,255,0.9)' : 'rgba(120,180,220,0.35)';
-  ctx.lineWidth = success ? 6 : 2; ctx.stroke();
-  glow += 0.03;
-  const galpha = 0.08 + 0.04*Math.sin(glow*2);
-  ctx.fillStyle = 'rgba(90,150,200,'+galpha+')'; ctx.beginPath(); ctx.arc(cx,cy, R*0.15,0,Math.PI*2); ctx.fill();
-  angle += 0.002 + (success?0.01:0);
-  requestAnimationFrame(draw);
+body{
+  margin:0;padding:1.2rem;
+  background: radial-gradient(circle at 20% 20%, #050507, #000);
+  color:#e6e2d3;
+  font-family:'Cinzel Decorative', serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+  overflow-y:auto;
 }
-draw();
-const correct = {"r1": "Schatten,Zeichen,Licht,Opfer", "r2": "69723", "r3": "kerze,blut,asche,salz,wasser", "r4": "FIC"};
+.container{max-width:920px;margin:0 auto;}
+.card{background:rgba(10,10,12,0.6);border:1px solid rgba(255,215,0,0.06);padding:18px;border-radius:12px;box-shadow:0 6px 30px rgba(0,0,0,0.6);}
+h1{font-size:1.8rem;margin:0 0 8px 0;text-shadow:0 0 10px rgba(240,214,120,0.08)}
+p.lead{opacity:0.9;margin-top:0}
+.playbtn{background:#111;color:#f0e68c;border:2px solid rgba(240,214,120,0.18);padding:10px 14px;border-radius:8px;cursor:pointer}
+.input{display:block;width:100%;padding:10px;margin-top:12px;border-radius:8px;border:1px solid #333;background:#0c0c0e;color:#efe7c6;font-size:1rem}
+.small{font-size:0.9rem;color:#cfc6b0}
+.hintbox{margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px}
+.runes-bg{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:0.6}
+.rune {position:absolute;font-size:20px;color:rgba(240,214,120,0.08);animation:float 10s linear infinite;}
+@keyframes float{from{transform:translateY(120vh) rotate(0deg)}to{transform:translateY(-20vh) rotate(360deg)}}
+.button {background:#1b1b1b;color:#ffd97d;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.06);cursor:pointer;margin-top:8px}
+.success{color:#9be89b;font-weight:700}
+.fail{color:#f18b8b;font-weight:700}
+.symbol-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}
+.symbol{width:84px;height:84px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:2.2rem;cursor:pointer;border:1px solid rgba(255,255,255,0.03)}
+.order-pill{display:inline-block;padding:6px 10px;background:rgba(255,255,255,0.04);border-radius:999px;margin:6px 6px 0 0}
+.footer-small{font-size:0.85rem;opacity:0.8;margin-top:12px}
+</style>
+</head>
+<body>
 
+// add moving runes background
+(function(){
+  const chars = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚺ','ᚾ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
+  const container = document.createElement('div');
+  container.className='runes-bg';
+  for(let i=0;i<30;i++){
+    const d = document.createElement('div');
+    d.className='rune';
+    d.style.left=(Math.random()*100)+'%';
+    d.style.fontSize=(14+Math.random()*40)+'px';
+    d.style.animationDuration=(8+Math.random()*12)+'s';
+    d.style.animationDelay=(Math.random()*5)+'s';
+    d.textContent = chars[Math.floor(Math.random()*chars.length)];
+    container.appendChild(d);
+  }
+  document.body.appendChild(container);
+})();
+
+<div class="container">
+  <div class="card">
+    <h1>Der Kreis der Erlösung</h1>
+    <p class="lead small">Hinweis (Audio) — untenstehender Button spielt die Sprecheraufnahme ab. Der Text ist zusätzlich weiter unten zur Vorbereitung des TTS sichtbar.</p>
+    <button class="playbtn" id="playBtn">🔊 Hinweis abspielen</button>
+    <audio id="audio" src="audio/finale.mp3"></audio>
+    <div class="hintbox"><p>Im Finale prüft das Siegel eure Antworten. Wenn alles stimmt, werdet ihr den Gegenzauber sprechen können.</p></div>
+
+    <div id="interaction" style="margin-top:12px;">
+    </div>
+
+    <div id="feedback" class="hintbox" style="display:none"></div>
+
+    <div class="footer-small">
+      <strong>Sprechertext (für TTS):</strong>
+      <pre style="white-space:pre-wrap;margin-top:8px;background:rgba(0,0,0,0.25);padding:10px;border-radius:8px">
+(Dramatischer Chor, Herzschlag, steigende Spannung)
+"Nun sei das Siegel gebrochen, wenn die Reihenfolge stimmt und die Gaben korrekt dargebracht."
+Sprecheranweisung: eindringlich, triumphal am Ende.
+</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+
+document.getElementById('playBtn').addEventListener('click', function(){ document.getElementById('audio').play(); });
+document.getElementById('interaction').innerHTML = `
+  <p class="small">Drückt auf 'Prüfe das Siegel' um zu sehen, ob eure gespeicherten Antworten korrekt sind. Nur wenn alle vier Rätsel korrekt gelöst wurden, kann der Gegenzauber gesprochen werden.</p>
+  <button class="button" id="checkAll">Prüfe das Siegel</button>
+  <div id="results" style="margin-top:12px"></div>
+`;
 document.getElementById('checkAll').addEventListener('click', function(){
-  const r1 = (localStorage.getItem('r1_answer')||'').trim();
-  const r2 = (localStorage.getItem('r2_answer')||'').trim();
-  const r3 = (localStorage.getItem('r3_answer')||'').trim();
-  const r4 = (localStorage.getItem('r4_answer')||'').trim().toUpperCase();
-  const norm = s=>s.toString().split(',').map(x=>x.trim().toLowerCase()).join(',');
-  let all = true; const out = document.getElementById('results'); out.innerHTML='';
-  if(r1 && norm(r1)===norm(correct.r1)){ out.innerHTML += '<div style="color:#9be89b">Rätsel 1: Korrekt</div>'; } else { out.innerHTML += '<div style="color:#f18b8b">Rätsel 1: FALSCH</div>'; all=false; }
-  if(r2 && r2===correct.r2){ out.innerHTML += '<div style="color:#9be89b">Rätsel 2: Korrekt</div>'; } else { out.innerHTML += '<div style="color:#f18b8b">Rätsel 2: FALSCH</div>'; all=false; }
-  if(r3 && r3===correct.r3){ out.innerHTML += '<div style="color:#9be89b">Rätsel 3: Korrekt</div>'; } else { out.innerHTML += '<div style="color:#f18b8b">Rätsel 3: FALSCH</div>'; all=false; }
-  if(r4 && r4===correct.r4){ out.innerHTML += '<div style="color:#9be89b">Rätsel 4: Korrekt</div>'; } else { out.innerHTML += '<div style="color:#f18b8b">Rätsel 4: FALSCH</div>'; all=false; }
-  if(all){ out.innerHTML += '<div class="success-box">Alle Rätsel korrekt! Der Gegenzauber wird gesprochen...</div>'; success=true; new Audio('audio/sfx_chime.mp3').play(); setTimeout(function(){ new Audio('audio/finale.mp3').play(); },900); } else { success=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  var correct = {"r1": "Schatten,Zeichen,Licht,Opfer", "r2": "69723", "r3": "kerze,blut,asche,salz,wasser", "r4": "FIC"};
+  var r1 = (localStorage.getItem('r1_answer')||'').trim();
+  var r2 = (localStorage.getItem('r2_answer')||'').trim();
+  var r3 = (localStorage.getItem('r3_answer')||'').trim();
+  var r4 = (localStorage.getItem('r4_answer')||'').trim().toUpperCase();
+  function show(msg){ var el = document.getElementById('results'); el.innerHTML += msg + '<br/>'; }
+  var all = true;
+  var norm = function(s){ return s.toString().split(',').map(function(x){return x.trim().toLowerCase();}).join(','); };
+  if(r1 && norm(r1)===norm(correct.r1)){ show('<div class="success">Rätsel 1: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 1: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r2 && r2===correct.r2){ show('<div class="success">Rätsel 2: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 2: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r3 && r3===correct.r3){ show('<div class="success">Rätsel 3: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 3: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(r4 && r4===correct.r4){ show('<div class="success">Rätsel 4: Korrekt</div>'); new Audio('audio/sfx_correct.mp3').play(); } else { show('<div class="fail">Rätsel 4: FALSCH</div>'); all=false; new Audio('audio/sfx_wrong.mp3').play(); }
+  if(all){ document.getElementById('results').innerHTML += '<div style="margin-top:12px" class="success"><strong>Alle Rätsel korrekt! Der Gegenzauber wird gesprochen...</strong></div>'; new Audio('audio/finale.mp3').play(); setTimeout(function(){ alert('Gegenzauber aktiviert — Ritual gebrochen!'); },1200); }
+  else{ document.getElementById('results').innerHTML += '<div style="margin-top:12px" class="fail"><strong>Nicht alle Antworten stimmen. Überprüft eure Notizen und kehrt zu den Stationen zurück.</strong></div>'; }
 });
 
 </script>
-</body></html>
+</body>
+</html>
