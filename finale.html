@@ -3,32 +3,32 @@
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap');
-body{margin:0;padding:1.2rem;background:radial-gradient(circle at 20% 20%, #050507, #000);color:#e6e2d3;font-family:'Cinzel Decorative',serif;min-height:100vh;overflow-y:auto;}
+body{margin:0;padding:1.2rem;background:radial-gradient(circle at 30% 20%, #001021, #000018); color:#dfefff;font-family:'Cinzel Decorative',serif;min-height:100vh;overflow-y:auto;}
 .container{max-width:920px;margin:0 auto;}
-.card{background:rgba(10,10,12,0.6);padding:18px;border-radius:12px;}
-.playbtn{background:#0b1220;color:#9fd8ff;border-radius:8px;padding:10px 14px;border:none;cursor:pointer}
+.card{background:rgba(5,10,20,0.75);padding:18px;border-radius:12px;border:1px solid rgba(80,160,255,0.06);}
+.playbtn{background:#062033;color:#bfe9ff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
 .input{display:block;width:100%;padding:10px;margin-top:12px;border-radius:8px;border:1px solid #333;background:#0c0c0e;color:#efe7c6}
 
-body{background:radial-gradient(circle at 30% 20%, #001021, #000018); color:#dfefff}
-.card{background:rgba(5,10,20,0.75);border:1px solid rgba(80,160,255,0.06)}
-.runecanvas{width:100%;height:360px;display:block;margin:16px 0}
-.playbtn{background:#062033;color:#bfe9ff;padding:10px 14px;border-radius:8px;border:none;cursor:pointer}
+.runecanvas{width:100%;height:360px;display:block;margin:16px 0;cursor:pointer}
 .final-button{background:#08314a;color:#cfeeff;padding:10px 14px;border-radius:10px;border:1px solid rgba(150,220,255,0.06)}
 .success-box{background:rgba(10,30,50,0.6);border:1px solid rgba(120,200,255,0.08);padding:12px;border-radius:8px;margin-top:12px}
+.hint{color:#9dbbdc;font-size:0.95rem}
+.center-hint{position:relative;top:-120px;text-align:center;color:#bfe9ff;font-weight:700;pointer-events:none}
 </style>
 </head><body>
 <div class="container"><div class="card">
 <h1>Der Kreis der Erlösung</h1>
-<div class="hintbox"><p>Im Finale prüft das Siegel eure Antworten. Wenn alles stimmt, werdet ihr den Gegenzauber sprechen können.</p></div>
-<canvas id="runecast" class="runecanvas"></canvas>
-<div id="interaction" style="margin-top:12px">
-    <p class="small">Drückt auf 'Prüfe das Siegel' um zu sehen, ob eure Antworten korrekt sind.</p>
+<div class="hintbox"><p class="hint">Im Finale prüft das Siegel zunächst die Zutaten. Wenn alles stimmt, werdet ihr den Gegenzauber sprechen können.</p></div>
+<canvas id="runecast" class="runecanvas" aria-label="Magischer Runenkreis"></canvas>
+<div class="center-hint" id="centerHint" style="display:none">Berühre den aktivierten Kreis</div>
 
-    <!-- neue Eingabefelder: fünf Zeilen mit Zutat + Menge -->
+<div id="interaction" style="margin-top:12px">
+    <p class="small">Drückt auf 'Prüfe die Zutaten' um zu sehen, ob eure Antworten korrekt sind.</p>
+
     <div id="ingredients" style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0;">
       <label style="grid-column:1/3;font-size:0.9rem;color:#cfe7d0">Zutatenliste (Name, Menge)</label>
 
-      <input class="ing-name input" placeholder="Zutat 1 (z.B. kerze)" />
+      <input class="ing-name input" placeholder="Zutat 1" />
       <input class="ing-qty input" placeholder="Menge" style="width:110px" />
 
       <input class="ing-name input" placeholder="Zutat 2" />
@@ -48,38 +48,100 @@ body{background:radial-gradient(circle at 30% 20%, #001021, #000018); color:#dfe
     <div id="results" style="margin-top:12px"></div>
   </div>
 <script>
-document.getElementById('playBtn')?.addEventListener('click', function(){ document.getElementById('audio')?.play(); });
-
 const canvas = document.getElementById('runecast');
 const ctx = canvas.getContext('2d');
-function resize(){ canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight; }
+function resize(){ canvas.width = canvas.clientWidth * devicePixelRatio; canvas.height = canvas.clientHeight * devicePixelRatio; ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
 window.addEventListener('resize', resize); resize();
+
 const runes = ['ᚠ','ᚢ','ᚦ','ᚨ','ᚱ','ᚲ','ᚺ','ᚾ','ᛃ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛜ','ᛞ','ᛟ'];
-let angle=0; let glow=0; let success=false;
+let angle=0, glow=0, success=false, pulse=0;
+
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const cx = canvas.width/2, cy = canvas.height/2, R = Math.min(canvas.width,canvas.height)/3;
-  const g = ctx.createRadialGradient(cx,cy,10,cx,cy,R*1.4);
-  g.addColorStop(0,'rgba(40,80,120,0.12)'); g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height);
-  for(let i=0;i<16;i++){
-    const a = angle + i*(Math.PI*2/16);
-    const x = cx + Math.cos(a)*R, y = cy + Math.sin(a)*R;
-    ctx.font = Math.floor(R/5)+'px serif';
-    ctx.fillStyle = success ? 'rgba(180,240,255,'+(0.5+0.4*Math.sin(angle*3))+')' : 'rgba(140,190,220,0.26)';
-    ctx.save(); ctx.translate(x,y); ctx.rotate(a+Math.PI/2); ctx.fillText(runes[(i*3)%runes.length], -12, 6); ctx.restore();
+  const cw = canvas.width / devicePixelRatio;
+  const ch = canvas.height / devicePixelRatio;
+  const cx = cw/2, cy = ch/2, R = Math.min(cw,ch)/3;
+
+  if(!success){
+    // normal: rotating runes + subtle center
+    const g = ctx.createRadialGradient(cx,cy,10,cx,cy,R*1.4);
+    g.addColorStop(0,'rgba(40,80,120,0.12)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,cw,ch);
+
+    for(let i=0;i<16;i++){
+      const a = angle + i*(Math.PI*2/16);
+      const x = cx + Math.cos(a)*R, y = cy + Math.sin(a)*R;
+      ctx.font = Math.floor(R/5)+'px serif';
+      ctx.fillStyle = 'rgba(140,190,220,0.26)';
+      ctx.save(); ctx.translate(x,y); ctx.rotate(a+Math.PI/2); ctx.fillText(runes[(i*3)%runes.length], -12, 6); ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(cx,cy, R*0.45, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(120,180,220,0.35)';
+    ctx.lineWidth = 2; ctx.stroke();
+    // small central glow
+    glow += 0.03;
+    const galpha = 0.08 + 0.04*Math.sin(glow*2);
+    ctx.fillStyle = 'rgba(90,150,200,'+galpha+')'; ctx.beginPath(); ctx.arc(cx,cy, R*0.15,0,Math.PI*2); ctx.fill();
+    angle += 0.002;
+    document.getElementById('centerHint').style.display = 'none';
+  } else {
+    // SUCCESS: show only activated center — big pulsing blink
+    pulse += 0.08;
+    const pulseScale = 1 + 0.12 * Math.sin(pulse); // grows/shrinks
+    const coreR = R*0.6 * (1 + 0.08 * Math.sin(pulse*1.5));
+    // darken background with subtle vignette
+    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.fillRect(0,0,cw,ch);
+
+    // outer halo
+    const halo = ctx.createRadialGradient(cx,cy,coreR*0.3,cx,cy,coreR*2.5);
+    halo.addColorStop(0,'rgba(0,191,255,0.28)');
+    halo.addColorStop(0.5,'rgba(0,191,255,0.12)');
+    halo.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx,cy, coreR*2.5,0,Math.PI*2); ctx.fill();
+
+    // blinking inner circle
+    const blinkAlpha = 0.5 + 0.35 * Math.abs(Math.sin(pulse*1.8));
+    ctx.beginPath();
+    ctx.arc(cx,cy, coreR * pulseScale, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(180,240,255,'+blinkAlpha+')';
+    ctx.fill();
+
+    // inner rim
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = 'rgba(0,120,180,0.95)';
+    ctx.beginPath(); ctx.arc(cx,cy, coreR * (pulseScale-0.06), 0, Math.PI*2); ctx.stroke();
+
+    // big rune in center to invite click
+    ctx.font = Math.floor(coreR*0.9)+'px serif';
+    ctx.fillStyle = 'rgba(10,20,30,0.95)';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('ᚠ', cx, cy+2);
+
+    // instruction visible
+    document.getElementById('centerHint').style.display = 'block';
   }
-  ctx.beginPath();
-  ctx.arc(cx,cy, R*0.45, 0, Math.PI*2);
-  ctx.strokeStyle = success ? 'rgba(160,220,255,0.9)' : 'rgba(120,180,220,0.35)';
-  ctx.lineWidth = success ? 6 : 2; ctx.stroke();
-  glow += 0.03;
-  const galpha = 0.08 + 0.04*Math.sin(glow*2);
-  ctx.fillStyle = 'rgba(90,150,200,'+galpha+')'; ctx.beginPath(); ctx.arc(cx,cy, R*0.15,0,Math.PI*2); ctx.fill();
-  angle += 0.002 + (success?0.01:0);
+
   requestAnimationFrame(draw);
 }
 draw();
+
+// click -> if success and click within center -> navigate to tablet
+canvas.addEventListener('click', (e) => {
+  if(!success) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left);
+  const y = (e.clientY - rect.top);
+  const cx = rect.width/2, cy = rect.height/2;
+  // use same math as draw: center radius threshold
+  const R = Math.min(rect.width, rect.height)/3;
+  const coreR = R*0.6 * (1 + 0.08 * Math.sin(pulse*1.5));
+  const dx = x - cx, dy = y - cy;
+  if(Math.sqrt(dx*dx + dy*dy) <= coreR * 1.05){
+    // navigate to stone tablet page
+    window.location.href = 'finale-tablet.html';
+  }
+});
 
 // Erwartete Zutaten (nur noch diese Prüfung wird ausgeführt)
 const correct = {
