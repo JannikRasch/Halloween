@@ -184,7 +184,7 @@ document.getElementById('checkAll').addEventListener('click', function(){
   });
 
   if(ingAll){
-    out.innerHTML += '<div class="success-box">Alle Zutaten korrekt! Der Gegenzauber wird gesprochen...</div>';
+    out.innerHTML += '<div class="success-box">Alle Zutaten korrekt! Der Gegenzauber kann gesprochen werden...</div>';
     success = true;
     try { new Audio('audio/sfx_chime.mp3').play(); } catch(e) {}
     setTimeout(function(){ try { new Audio('audio/finale.mp3').play(); } catch(e){} },900);
